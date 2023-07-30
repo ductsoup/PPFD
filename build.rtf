@@ -1,0 +1,171 @@
+{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset0 Courier New;}{\f2\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\sl240\slmult1\lang9\f0\fs22 Raspbian GNU/Linux 10 (2020-02-13-raspbian-buster-lite)\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sl240\slmult1 ssh\par
+{\pntext\f2\'B7\tab}wpa_supplicant.conf\par
+\pard\sl240\slmult1 192.168.1.251\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sl240\slmult1 (1) Raspberry Pi Zero W ({\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/3400"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/3400}}}\f0\fs22 )\par
+{\pntext\f2\'B7\tab}(1) SFE Qwiic Hat ({\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/4688"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/4688}}}\f0\fs22 )\par
+{\pntext\f2\'B7\tab}(4) STEMMA QT / Qwiic JST SH 4-pin Cable ({\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/4210"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/4210}}}\f0\fs22 )\par
+{\pntext\f2\'B7\tab}(1) Adafruit AS7341 10-Channel Light / Color Sensor  ({\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/4698"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/4698}}}\f0\fs22 )\par
+{\pntext\f2\'B7\tab}(1) Adafruit BH1750 Light Sensor - STEMMA QT / Qwiic ({\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/4681"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/4681}}}\f0\fs22 )\par
+{\pntext\f2\'B7\tab}(1) Adafruit TSL2591 High Dynamic Range Digital Light Sensor ({\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/1980"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/1980}}}\f0\fs22 )\par
+{\pntext\f2\'B7\tab}(1) Adafruit LTR390 UV Light Sensor - STEMMA QT / Qwiic \line{\field{\*\fldinst{HYPERLINK "https://www.adafruit.com/product/4831"}}{\fldrslt{\ul\cf1 https://www.adafruit.com/product/4831}}}\f0\fs22\par
+\pard\sl240\slmult1\par
+passwd\par
+sudo raspi-config\par
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sl240\slmult1 Network, Hostname (light-mkII-01)\par
+{\pntext\f2\'B7\tab}Interfacing Options (enable I2C and SPI)\par
+{\pntext\f2\'B7\tab}Advanced Options, Expand Filesystem\par
+\pard\sl240\slmult1 nano -K update.sh\par
+\pard\li720\sl240\slmult1 apt update\par
+apt upgrade -y\par
+apt dist-upgrade -y\par
+apt autoclean -y\par
+apt autoremove -y\par
+\pard\sl240\slmult1 sudo chmod +x *.sh\par
+sudo ./update.sh\par
+\par
+sudo apt install i2c-tools -y\par
+sudo i2cdetect -y 1\par
+\pard\li720\sl240\slmult1\f1\fs20      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f\par
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --\par
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\par
+20: -- -- -- 23 -- -- -- -- -- 29 -- -- -- -- -- --\par
+30: -- -- -- -- -- -- -- -- -- 39 -- -- -- -- -- --\par
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\par
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\par
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\par
+70: -- -- -- -- -- -- -- --\f0\fs22\par
+\pard\sl240\slmult1\par
+sudo apt install -y python3 git python3-pip -y\par
+sudo pip3 install --upgrade setuptools\par
+pip3 install RPI.GPIO\par
+pip3 install adafruit-blinka\par
+nano -K blinkatest.py\par
+\pard\li720\sl240\slmult1 import board\par
+import digitalio\par
+import busio\par
+\par
+print("Hello blinka!")\par
+\par
+# Try to great a Digital input\par
+pin = digitalio.DigitalInOut(board.D4)\par
+print("Digital IO ok!")\par
+\par
+# Try to create an I2C device\par
+i2c = busio.I2C(board.SCL, board.SDA)\par
+print("I2C ok!")\par
+\par
+# Try to create an SPI device\par
+spi = busio.SPI(board.SCLK, board.MOSI, board.MISO)\par
+print("SPI ok!")\par
+\par
+print("done!")\par
+\pard\sl240\slmult1 python3 blinkatest.py\par
+\pard\li720\sl240\slmult1 Hello blinka!\par
+Digital IO ok!\par
+I2C ok!\par
+SPI ok!\par
+done!\par
+\pard\sl240\slmult1\par
+pip3 install adafruit-circuitpython-as7341\par
+pip3 install --upgrade adafruit-circuitpython-as7341\par
+nano -K  as7341_simpletest.py \par
+\pard\li720\sl240\slmult1 # SPDX-FileCopyrightText: 2020 Bryan Siepert, written for Adafruit Industries\par
+# SPDX-License-Identifier: MIT\par
+from time import sleep\par
+import board\par
+import busio\par
+from adafruit_as7341 import AS7341\par
+\par
+i2c = busio.I2C(board.SCL, board.SDA)\par
+sensor = AS7341(i2c)\par
+\par
+\par
+def bar_graph(read_value):\par
+    scaled = int(read_value / 1000)\par
+    return "[%5d] " % read_value + (scaled * "*")\par
+\par
+\par
+while True:\par
+\par
+    print("F1 - 415nm/Violet  %s" % bar_graph(sensor.channel_415nm))\par
+    print("F2 - 445nm//Indigo %s" % bar_graph(sensor.channel_445nm))\par
+    print("F3 - 480nm//Blue   %s" % bar_graph(sensor.channel_480nm))\par
+    print("F4 - 515nm//Cyan   %s" % bar_graph(sensor.channel_515nm))\par
+    print("F5 - 555nm/Green   %s" % bar_graph(sensor.channel_555nm))\par
+    print("F6 - 590nm/Yellow  %s" % bar_graph(sensor.channel_590nm))\par
+    print("F7 - 630nm/Orange  %s" % bar_graph(sensor.channel_630nm))\par
+    print("F8 - 680nm/Red     %s" % bar_graph(sensor.channel_680nm))\par
+    print("\\n------------------------------------------------")\par
+    sleep(1)\par
+\pard\sl240\slmult1\par
+pip3 install adafruit-circuitpython-bh1750\par
+nano -K bh1750_simpletest.py \par
+\pard\li720\sl240\slmult1 # SPDX-FileCopyrightText: 2020 Bryan Siepert, written for Adafruit Industries\par
+\par
+# SPDX-License-Identifier: Unlicense\par
+import time\par
+import board\par
+import adafruit_bh1750\par
+\par
+i2c = board.I2C()\par
+\par
+sensor = adafruit_bh1750.BH1750(i2c)\par
+\par
+while True:\par
+    print("%.2f Lux" % sensor.lux)\par
+    time.sleep(1)\par
+\pard\sl240\slmult1\par
+pip3 install adafruit-circuitpython-tsl2591\par
+\pard\sl240\slmult1\tx7470 nano -K tsl2591_simpletest.py\par
+\pard\li720\sl240\slmult1 # Simple demo of the TSL2591 sensor.  Will print the detected light value\par
+# every second.\par
+import time\par
+\par
+import board\par
+import busio\par
+\par
+import adafruit_tsl2591\par
+\par
+# Initialize the I2C bus.\par
+i2c = busio.I2C(board.SCL, board.SDA)\par
+\par
+# Initialize the sensor.\par
+sensor = adafruit_tsl2591.TSL2591(i2c)\par
+\par
+# You can optionally change the gain and integration time:\par
+# sensor.gain = adafruit_tsl2591.GAIN_LOW (1x gain)\par
+# sensor.gain = adafruit_tsl2591.GAIN_MED (25x gain, the default)\par
+# sensor.gain = adafruit_tsl2591.GAIN_HIGH (428x gain)\par
+# sensor.gain = adafruit_tsl2591.GAIN_MAX (9876x gain)\par
+# sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_100MS (100ms, default)\par
+# sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_200MS (200ms)\par
+# sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_300MS (300ms)\par
+# sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_400MS (400ms)\par
+# sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_500MS (500ms)\par
+# sensor.integration_time = adafruit_tsl2591.INTEGRATIONTIME_600MS (600ms)\par
+\par
+# Read the total lux, IR, and visible light levels and print it every second.\par
+while True:\par
+    # Read and calculate the light level in lux.\par
+    lux = sensor.lux\par
+    print("Total light: \{0\}lux".format(lux))\par
+    # You can also read the raw infrared and visible light levels.\par
+    # These are unsigned, the higher the number the more light of that type.\par
+    # There are no units like lux.\par
+    # Infrared levels range from 0-65535 (16-bit)\par
+    infrared = sensor.infrared\par
+    print("Infrared light: \{0\}".format(infrared))\par
+    # Visible-only levels range from 0-2147483647 (32-bit)\par
+    visible = sensor.visible\par
+    print("Visible light: \{0\}".format(visible))\par
+    # Full spectrum (visible + IR) also range from 0-2147483647 (32-bit)\par
+    full_spectrum = sensor.full_spectrum\par
+    print("Full spectrum (IR + visible) light: \{0\}".format(full_spectrum))\par
+    time.sleep(1.0)\par
+\pard\sl240\slmult1\par
+\par
+}
+ 
